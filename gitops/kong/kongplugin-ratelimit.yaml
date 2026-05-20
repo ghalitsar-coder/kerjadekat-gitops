@@ -1,0 +1,11 @@
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: global-rate-limit
+  namespace: kong
+config:
+  minute: 100
+  limit_by: ip
+  policy: local
+plugin: rate-limiting

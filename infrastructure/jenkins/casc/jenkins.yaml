@@ -1,0 +1,28 @@
+jenkins:
+  systemMessage: "KerjaDekat CI Server - Managed by Configuration as Code"
+  numExecutors: 2
+  mode: NORMAL
+  scmCheckoutRetryCount: 2
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "dockerhub-creds"
+              username: "${DOCKER_USERNAME}"
+              password: "${DOCKER_PASSWORD}"
+              description: "Docker Hub Credentials"
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: "github-ssh-key"
+              username: "git"
+              description: "SSH Key for GitOps Repo"
+              privateKeySource:
+                directEntry:
+                  privateKey: "PLACEHOLDER_SSH_KEY_REPLACE_ME_OR_USE_JENKINS_UI"
+
+unclassified:
+  location:
+    url: http://localhost:8080/

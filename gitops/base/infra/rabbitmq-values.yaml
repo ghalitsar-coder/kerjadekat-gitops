@@ -1,0 +1,17 @@
+# Values override for bitnami/rabbitmq chart
+auth:
+  username: guest
+  password: guest
+communityPlugins: >
+  https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.13.0/rabbitmq_delayed_message_exchange-3.13.0.ez
+extraPlugins: "rabbitmq_delayed_message_exchange"
+persistence:
+  size: 2Gi
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+replicaCount: 1

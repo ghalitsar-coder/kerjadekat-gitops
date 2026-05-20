@@ -1,0 +1,81 @@
+# Custom PostgreSQL StatefulSet using PostGIS image.
+# We do not use the Bitnami chart because the Bitnami entrypoint
+# conflicts with the postgis/postgis image scripts.
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: kerjadekat-infra
+  labels:
+    app: postgresql
+spec:
+  serviceName: postgresql-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          # Use our custom image that includes the initdb script
+          image: kerjadekat/postgres-postgis:17-3.5
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: tcp-postgresql
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kerjadekat-backend-secret
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kerjadekat-backend-secret
+                  key: DB_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: kerjadekat-backend-secret
+                  key: DB_NAME
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi
+        # In Minikube, default storage class is 'standard'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-svc
+  namespace: kerjadekat-infra
+  labels:
+    app: postgresql
+spec:
+  type: ClusterIP
+  selector:
+    app: postgresql
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: 5432

@@ -1,0 +1,46 @@
+# All KerjaDekat namespaces declared in a single file so ArgoCD
+# can sync namespace creation before any workloads.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kerjadekat
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    env: staging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kerjadekat-infra
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    env: staging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong
+  labels:
+    app.kubernetes.io/managed-by: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/managed-by: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging
+  labels:
+    app.kubernetes.io/managed-by: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jenkins
+  labels:
+    app.kubernetes.io/managed-by: argocd

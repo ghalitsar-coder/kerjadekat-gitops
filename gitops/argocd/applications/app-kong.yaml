@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kong
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kerjadekat
+  source:
+    repoURL: https://charts.konghq.com
+    targetRevision: 2.38.x
+    chart: kong
+    helm:
+      values: |
+        ingressController:
+          enabled: true
+          installCRDs: true
+        env:
+          database: "off"
+        proxy:
+          type: NodePort
+          http:
+            nodePort: 30080
+          https:
+            nodePort: 30443
+        admin:
+          enabled: true
+          type: ClusterIP
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kong
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

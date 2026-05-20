@@ -1,0 +1,26 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kerjadekat_jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Mount Docker socket so Jenkins can build images
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount JCasC config
+      - ./casc/jenkins.yaml:/var/jenkins_home/casc_configs/jenkins.yaml
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
+      # Pass Docker Hub credentials from host env, or set directly here for dev
+      - DOCKER_USERNAME=${DOCKER_USERNAME:-YOUR_DOCKERHUB_USER}
+      - DOCKER_PASSWORD=${DOCKER_PASSWORD:-YOUR_DOCKERHUB_PAT}
+      # Required so Jenkins runs container as root to access docker.sock
+      - DOCKER_HOST=unix:///var/run/docker.sock
+
+volumes:
+  jenkins_home:

@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kerjadekat-frontend-config
+  namespace: kerjadekat
+  labels:
+    app: kerjadekat-frontend
+data:
+  # API base — relative path, Kong routes /api/* to backend externally
+  KERJADEKAT_API_BASE: "/api/v1"
+  # Auth URL — update to match your Minikube IP + Kong NodePort or hostname
+  AUTH_URL: "http://kerjadekat.local"

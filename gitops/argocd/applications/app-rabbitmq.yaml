@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kerjadekat
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 14.1.x
+    chart: rabbitmq
+    helm:
+      valueFiles:
+        - https://raw.githubusercontent.com/YOUR_ORG/kerjadekat/main/gitops/base/infra/rabbitmq-values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kerjadekat-infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

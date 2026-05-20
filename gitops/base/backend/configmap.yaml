@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kerjadekat-backend-config
+  namespace: kerjadekat
+  labels:
+    app: kerjadekat-backend
+data:
+  SERVER_PORT: "8080"
+  ENV: "production"
+
+  # --- Database (host uses cluster-internal DNS) ---
+  DB_HOST: "postgresql-svc.kerjadekat-infra.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_SSLMODE: "disable"
+
+  # --- Redis ---
+  REDIS_HOST: "redis-master.kerjadekat-infra.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: ""
+
+  # --- RabbitMQ ---
+  RABBITMQ_URL: "amqp://guest:guest@rabbitmq.kerjadekat-infra.svc.cluster.local:5672/"
+
+  # --- Matching Engine ---
+  WORKER_LOCATION_TTL_MINUTES: "5"
+  MATCH_RADIUS_METERS: "5000"
+  MATCH_TIMER_SECONDS: "60"
+  MATCH_MAX_ROUNDS: "5"
+
+  # --- Auth ---
+  AUTH_URL: "http://kerjadekat.local"
+
+  # --- JWT Expiry ---
+  JWT_ACCESS_EXPIRY_MINUTES: "15"
+  JWT_REFRESH_EXPIRY_DAYS: "7"
+
+  # --- Misc ---
+  OTP_LOG_FILE: "/tmp/otp.log"
