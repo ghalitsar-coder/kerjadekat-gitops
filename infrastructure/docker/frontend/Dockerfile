@@ -1,79 +1,42 @@
 # ==========================================
 # KerjaDekat Frontend — Minikube-ready
-# TanStack Start SSR → SPA fallback via nginx
+# Pattern: TanStack Start SPA via vite preview
+# Reference: voyage-planner Azure deployment
 # ==========================================
-FROM oven/bun:latest AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Install dependencies (full including devDeps — vite preview needs them)
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile || bun install
+# Use bun for faster install since the project uses bun.lock
+RUN corepack enable && npm install -g bun && bun install --frozen-lockfile || bun install
 
 COPY . .
 
-ARG KERJADEKAT_API_BASE=/api/v1
-ENV KERJADEKAT_API_BASE=${KERJADEKAT_API_BASE}
+# Build-time env vars (baked into client bundle by Vite)
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
-# Build client + server bundles
+# Build SPA (cloudflare: false, ssr: false in vite.config.ts)
 RUN bun run build
 
-# Generate index.html from built assets dynamically
-RUN node -e " \
-  const fs = require('fs'); \
-  const path = require('path'); \
-  const assetsDir = 'dist/client/assets'; \
-  const cssFiles = fs.readdirSync(assetsDir).filter(f => f.endsWith('.css')); \
-  const jsFiles = fs.readdirSync(assetsDir).filter(f => f.startsWith('index-') && f.endsWith('.js')); \
-  const jsSizes = jsFiles.map(f => ({name: f, size: fs.statSync(path.join(assetsDir, f)).size})); \
-  jsSizes.sort((a,b) => b.size - a.size); \
-  const mainEntry = jsSizes[0]?.name || ''; \
-  const routeManifest = jsSizes[1]?.name || ''; \
-  const cssLinks = cssFiles.map(f => '<link rel=\"stylesheet\" href=\"/assets/' + f + '\"/>').join('\n    '); \
-  const html = '<!DOCTYPE html>\n<html lang=\"id\">\n<head>\n' + \
-    '    <meta charset=\"UTF-8\"/>\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"/>\n' + \
-    '    <title>KerjaDekat</title>\n    <link rel=\"manifest\" href=\"/manifest.webmanifest\"/>\n' + \
-    '    ' + cssLinks + '\n' + \
-    '    <script type=\"module\" crossorigin src=\"/assets/' + mainEntry + '\"></script>\n' + \
-    (routeManifest ? '    <script type=\"module\" crossorigin src=\"/assets/' + routeManifest + '\"></script>\n' : '') + \
-    '</head>\n<body>\n    <div id=\"root\"></div>\n</body>\n</html>\n'; \
-  fs.writeFileSync('dist/client/index.html', html); \
-  console.log('Generated index.html with entry:', mainEntry); \
-"
-
 # ==========================================
-# Stage 2: Serve (nginx)
+# Stage 2: Serve via vite preview (like voyage-planner)
 # ==========================================
-FROM nginx:1.27-alpine
+FROM node:20-alpine
 
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
+WORKDIR /app
 
-COPY --from=builder /app/dist/client .
+# Copy full project (vite preview needs node_modules + dist + src for config resolution)
+COPY --from=builder /app/package.json /app/bun.lock ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/vite.config.ts ./vite.config.ts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-# Write nginx config using printf (heredoc not supported in legacy builder)
-RUN printf 'server {\n\
-    listen 80;\n\
-    server_name _;\n\
-    root /usr/share/nginx/html;\n\
-    index index.html;\n\
-    location / {\n\
-        try_files $uri $uri/ /index.html;\n\
-    }\n\
-    location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|map|webmanifest)$ {\n\
-        expires 1y;\n\
-        add_header Cache-Control "public, immutable";\n\
-        access_log off;\n\
-    }\n\
-    add_header X-Frame-Options SAMEORIGIN always;\n\
-    add_header X-Content-Type-Options nosniff always;\n\
-    add_header X-XSS-Protection "1; mode=block" always;\n\
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;\n\
-    gzip on;\n\
-    gzip_types text/plain text/css application/javascript application/json\n\
-               application/x-javascript text/xml application/xml\n\
-               application/xml+rss text/javascript image/svg+xml;\n\
-    gzip_min_length 256;\n\
-}\n' > /etc/nginx/conf.d/default.conf
+EXPOSE 3000
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# vite preview serves the built SPA with proper SPA fallback routing
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "3000"]
