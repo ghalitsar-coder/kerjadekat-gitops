@@ -609,3 +609,79 @@ minikube delete
 2. **Image Registry:** Untuk deployment via ArgoCD, image harus sudah di-push ke DockerHub. Jenkins menangani ini otomatis.
 3. **Persistent Data:** PostgreSQL menggunakan PersistentVolumeClaim 10 GB. Data tetap aman walau pod restart, tapi hilang kalau `minikube delete`.
 4. **Resource:** Minikube dikonfigurasi dengan 6 CPU dan 16 GB RAM. Pastikan laptop tidak kehabisan resource saat menjalankan semua service.
+
+---
+
+## Quick Access — Cheat Sheet
+
+### Start Minikube (setelah reboot/shutdown)
+
+```bash
+minikube start
+```
+
+### Port-Forward untuk Akses Browser
+
+```bash
+# Kong API Gateway (Frontend + Backend)
+kubectl port-forward -n kong svc/kong-kong-proxy 9080:80
+
+# ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8081:443
+
+# Grafana Dashboard
+kubectl port-forward -n monitoring svc/kube-prometheus-grafana 3000:80
+
+# RabbitMQ Management UI
+kubectl port-forward -n kerjadekat-infra svc/rabbitmq 15672:15672
+```
+
+### URLs setelah port-forward
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| Frontend | http://localhost:9080/ | - |
+| Backend API | http://localhost:9080/api/health | - |
+| ArgoCD | https://localhost:8081/ | admin / (lihat password di bawah) |
+| Grafana | http://localhost:3000/ | admin / (lihat password di bawah) |
+| RabbitMQ | http://localhost:15672/ | guest / guest |
+
+### Dapatkan Password
+
+```bash
+# ArgoCD admin password
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+
+# Grafana admin password
+kubectl get secret -n monitoring kube-prometheus-grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
+### Cek Status Semua Pods
+
+```bash
+kubectl get pods -A | grep -v kube-system
+```
+
+### Cek Logs
+
+```bash
+kubectl logs -n kerjadekat deploy/kerjadekat-backend --tail=50
+kubectl logs -n kerjadekat deploy/kerjadekat-frontend --tail=50
+kubectl logs -n kerjadekat-infra rabbitmq-0 --tail=50
+kubectl logs -n kerjadekat-infra postgresql-0 --tail=50
+```
+
+### Rebuild Image (setelah code change)
+
+```bash
+# Masuk ke Minikube Docker environment
+eval $(minikube docker-env --shell bash)
+
+# Rebuild backend
+docker build -t ghalitsar/kerjadekat-backend:latest ./backend/
+kubectl rollout restart deployment/kerjadekat-backend -n kerjadekat
+
+# Rebuild frontend
+docker build -t ghalitsar/kerjadekat-frontend:latest -f infrastructure/docker/frontend/Dockerfile ./frontend/
+kubectl rollout restart deployment/kerjadekat-frontend -n kerjadekat
+```
