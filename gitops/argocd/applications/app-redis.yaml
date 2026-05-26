@@ -13,12 +13,29 @@ spec:
     targetRevision: 19.3.x
     chart: redis
     helm:
-      valueFiles:
-        - https://raw.githubusercontent.com/YOUR_ORG/kerjadekat/main/gitops/base/infra/redis-values.yaml
+      values: |
+        architecture: standalone
+        auth:
+          enabled: false
+        master:
+          persistence:
+            size: 2Gi
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+        replica:
+          replicaCount: 0
   destination:
     server: https://kubernetes.default.svc
     namespace: kerjadekat-infra
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
+    # automated sync disabled for local dev (Minikube)
+    # enable for staging/prod by uncommenting:
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true

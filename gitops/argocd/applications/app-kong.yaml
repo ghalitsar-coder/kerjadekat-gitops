@@ -16,7 +16,7 @@ spec:
       values: |
         ingressController:
           enabled: true
-          installCRDs: true
+          installCRDs: false
         env:
           database: "off"
         proxy:
@@ -31,7 +31,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kong
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
+    # automated sync disabled for local dev (Minikube)
+    # enable for staging/prod by uncommenting:
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true

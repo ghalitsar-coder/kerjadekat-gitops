@@ -1,0 +1,54 @@
+# Kong Ingress routing for KerjaDekat
+# Akses via: kubectl port-forward -n kong svc/kong-kong-proxy 9080:80
+# atau http://<minikube-ip>:30080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kerjadekat-api
+  namespace: kerjadekat
+  annotations:
+    # Strip /api prefix — request /api/health diteruskan sebagai /health ke backend
+    konghq.com/strip-path: "true"
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          # Backend API — /api/* → backend-svc (stripped to /*)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-svc
+                port:
+                  number: 8080
+          # WebSocket endpoint — /ws → backend-svc
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-svc
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kerjadekat-frontend
+  namespace: kerjadekat
+  annotations:
+    konghq.com/strip-path: "false"
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          # Frontend catch-all — semua path selain /api dan /ws → frontend SPA
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-svc
+                port:
+                  number: 80

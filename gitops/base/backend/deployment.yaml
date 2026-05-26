@@ -8,7 +8,7 @@ metadata:
     app: kerjadekat-backend
     version: latest
 spec:
-  replicas: 2  # HPA manages this; min 2 for HA
+  replicas: 1  # 1 for Minikube local dev; HPA manages in prod
   selector:
     matchLabels:
       app: kerjadekat-backend
@@ -31,8 +31,8 @@ spec:
       containers:
         - name: backend
           # Jenkins CI updates this image tag on every successful build
-          image: YOUR_DOCKERHUB_USER/kerjadekat-backend:latest
-          imagePullPolicy: Always
+          image: ghalitsar/kerjadekat-backend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080

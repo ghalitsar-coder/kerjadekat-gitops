@@ -9,7 +9,7 @@ metadata:
 spec:
   project: kerjadekat
   source:
-    repoURL: https://github.com/YOUR_ORG/kerjadekat
+    repoURL: https://github.com/ghalitsar-coder/kerjadekat-gitops
     targetRevision: HEAD
     path: gitops/base/infra
     # Note: We are deploying our custom StatefulSet, not the Bitnami Helm chart
@@ -17,7 +17,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kerjadekat-infra
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
+    # automated sync disabled for local dev (Minikube)
+    # enable for staging/prod by uncommenting:
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true

@@ -8,7 +8,7 @@ metadata:
     app: kerjadekat-frontend
     version: latest
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: kerjadekat-frontend
@@ -26,8 +26,8 @@ spec:
       containers:
         - name: frontend
           # Jenkins CI updates this image tag on every successful build
-          image: YOUR_DOCKERHUB_USER/kerjadekat-frontend:latest
-          imagePullPolicy: Always
+          image: ghalitsar/kerjadekat-frontend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 80

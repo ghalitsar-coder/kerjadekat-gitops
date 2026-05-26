@@ -9,16 +9,18 @@ metadata:
 spec:
   project: kerjadekat
   source:
-    repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 14.1.x
-    chart: rabbitmq
-    helm:
-      valueFiles:
-        - https://raw.githubusercontent.com/YOUR_ORG/kerjadekat/main/gitops/base/infra/rabbitmq-values.yaml
+    repoURL: https://github.com/ghalitsar-coder/kerjadekat-gitops
+    targetRevision: HEAD
+    path: gitops/base/infra
+    directory:
+      include: "rabbitmq-statefulset.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: kerjadekat-infra
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
+    # automated sync disabled for local dev (Minikube)
+    # enable for staging/prod by uncommenting:
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true

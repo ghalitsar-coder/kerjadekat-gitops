@@ -7,15 +7,17 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: kerjadekat
   source:
-    repoURL: https://github.com/YOUR_ORG/kerjadekat
+    repoURL: https://github.com/ghalitsar-coder/kerjadekat-gitops
     targetRevision: HEAD
     path: gitops/argocd/applications
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
+    # automated sync disabled for local dev (Minikube)
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true
