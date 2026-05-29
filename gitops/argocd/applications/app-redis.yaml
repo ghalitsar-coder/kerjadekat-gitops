@@ -15,7 +15,7 @@ spec:
         auth:
           enabled: false
         image:
-          tag: latest
+          tag: 7.2.5
         master:
           persistence:
             size: 1Gi
