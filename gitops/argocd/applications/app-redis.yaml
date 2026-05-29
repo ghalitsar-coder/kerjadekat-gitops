@@ -4,8 +4,6 @@ kind: Application
 metadata:
   name: redis
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: kerjadekat
   source:
@@ -14,21 +12,13 @@ spec:
     chart: redis
     helm:
       values: |
-        architecture: standalone
         auth:
           enabled: false
+        image:
+          tag: latest
         master:
           persistence:
-            size: 2Gi
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 300m
-              memory: 256Mi
-        replica:
-          replicaCount: 0
+            size: 1Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: kerjadekat-infra
@@ -36,9 +26,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    # automated sync disabled for local dev (Minikube)
-    # enable for staging/prod by uncommenting:
-    # syncPolicy:
-    #   automated:
-    #     prune: true
-    #     selfHeal: true
