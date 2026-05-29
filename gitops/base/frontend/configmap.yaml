@@ -8,6 +8,6 @@ metadata:
     app: kerjadekat-frontend
 data:
   # API base — relative path, Kong routes /api/* to backend externally
-  KERJADEKAT_API_BASE: "/api/v1"
+  KERJADEKAT_API_BASE: "http://backend-svc.kerjadekat.svc.cluster.local:8080/api/v1"
   # Auth URL — update to match your Minikube IP + Kong NodePort or hostname
   AUTH_URL: "http://kerjadekat.local"

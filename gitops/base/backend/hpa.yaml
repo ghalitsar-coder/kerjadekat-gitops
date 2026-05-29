@@ -12,7 +12,7 @@ spec:
     kind: Deployment
     name: kerjadekat-backend
   minReplicas: 2
-  maxReplicas: 6
+  maxReplicas: 10
   metrics:
     - type: Resource
       resource:

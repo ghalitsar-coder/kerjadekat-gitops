@@ -35,8 +35,8 @@ RUN install -m 0755 -d /etc/apt/keyrings && \
 RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && \
     chmod +x /usr/local/bin/yq
 
-# Go back to Jenkins user
-USER jenkins
+# Keep root for Docker socket access (local dev only)
+# USER jenkins
 
 # Pre-install plugins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
