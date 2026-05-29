@@ -12,6 +12,7 @@ spec:
     chart: redis
     helm:
       values: |
+        architecture: standalone
         auth:
           enabled: false
         image:
