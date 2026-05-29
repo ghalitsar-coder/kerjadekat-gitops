@@ -10,7 +10,7 @@ spec:
   project: kerjadekat
   source:
     repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 19.3.x
+    targetRevision: "25.5.3"
     chart: redis
     helm:
       values: |
