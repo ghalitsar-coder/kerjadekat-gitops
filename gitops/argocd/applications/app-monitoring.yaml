@@ -34,7 +34,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     # automated sync disabled for local dev (Minikube)
     # syncPolicy:
     #   automated:

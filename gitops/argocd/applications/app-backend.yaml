@@ -15,7 +15,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kerjadekat
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     # automated sync disabled for local dev (Minikube)
     # enable for staging/prod by uncommenting:
     # syncPolicy:
