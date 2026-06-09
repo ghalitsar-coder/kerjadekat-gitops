@@ -23,6 +23,7 @@ images:
 
 configMapGenerator:
   - name: kerjadekat-backend-config
+    namespace: kerjadekat
     behavior: merge
     literals:
       - ENV=production
