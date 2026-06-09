@@ -26,7 +26,7 @@ spec:
       containers:
         - name: frontend
           # Jenkins CI updates this image tag on every successful build
-          image: ghalitsar/kerjadekat-frontend:d4bece2
+          image: ghalitsar/kerjadekat-frontend:0bbb54c
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
