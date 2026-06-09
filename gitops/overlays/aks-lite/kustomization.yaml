@@ -7,11 +7,13 @@ resources:
   - ../../base/backend
   - ../../base/frontend
   - ../../base/infra
-  - patches/backend-loadbalancer.yaml
-  - patches/frontend-loadbalancer.yaml
-  - patches/storage-class-pg.yaml
-  - patches/hpa-backend-limit.yaml
-  - patches/hpa-frontend-limit.yaml
+
+patches:
+  - path: patches/backend-loadbalancer.yaml
+  - path: patches/frontend-loadbalancer.yaml
+  - path: patches/storage-class-pg.yaml
+  - path: patches/hpa-backend-limit.yaml
+  - path: patches/hpa-frontend-limit.yaml
 
 images:
   - name: kerjadekat/postgres-postgis
