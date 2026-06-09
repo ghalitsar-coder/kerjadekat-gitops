@@ -1,4 +1,4 @@
-# gitops/overlays/aks/patches/storage-class-pg.yaml
+# gitops/overlays/aks-lite/patches/storage-class-pg.yaml
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -10,4 +10,8 @@ spec:
     - metadata:
         name: data
       spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
         storageClassName: default
