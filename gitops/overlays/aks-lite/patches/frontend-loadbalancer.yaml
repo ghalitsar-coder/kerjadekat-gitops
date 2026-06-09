@@ -1,0 +1,9 @@
+# gitops/overlays/aks-lite/patches/frontend-loadbalancer.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+  namespace: kerjadekat
+spec:
+  type: LoadBalancer

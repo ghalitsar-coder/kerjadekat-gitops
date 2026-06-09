@@ -1,0 +1,51 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kong
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kerjadekat
+  source:
+    repoURL: https://charts.konghq.com
+    targetRevision: 2.38.x
+    chart: kong
+    helm:
+      values: |
+        ingressController:
+          enabled: true
+          installCRDs: false
+        env:
+          database: "off"
+        # =====================================================
+        # AKS: Proxy menjadi LoadBalancer sehingga mendapat
+        #       Public IP dari Azure Load Balancer.
+        # Minikube: ganti ke NodePort (nodePort: 30080)
+        # =====================================================
+        proxy:
+          type: LoadBalancer
+          annotations:
+            service.beta.kubernetes.io/azure-load-balancer-resource-group: kerjadekat-rg
+          http:
+            enabled: true
+          https:
+            enabled: true
+        admin:
+          enabled: true
+          type: ClusterIP
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kong
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,26 @@
+# gitops/overlays/aks/patches/storage-class.yaml
+# Memastikan StatefulSet menggunakan storage class Azure Disk yang tersedia di AKS
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: kerjadekat-infra
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: default  # Di AKS ini biasanya managed-csi atau default (Azure Disk)
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  namespace: kerjadekat-infra
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: default

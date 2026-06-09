@@ -1,0 +1,33 @@
+# gitops/overlays/aks/kustomization.yaml
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - patches/kong-loadbalancer.yaml
+  - patches/storage-class-pg.yaml
+  - patches/storage-class-rmq.yaml
+  - patches/hpa-backend-limit.yaml
+  - patches/hpa-frontend-limit.yaml
+
+images:
+  - name: ghalitsar/kerjadekat-backend
+    newName: kerjadekatacr.azurecr.io/kerjadekat-backend
+    newTag: "latest"
+  - name: ghalitsar/kerjadekat-frontend
+    newName: kerjadekatacr.azurecr.io/kerjadekat-frontend
+    newTag: "latest"
+  - name: kerjadekat/postgres-postgis
+    newName: kerjadekatacr.azurecr.io/kerjadekat-postgres-postgis
+    newTag: "17-3.5"
+  - name: kerjadekat/rabbitmq-delayed
+    newName: kerjadekatacr.azurecr.io/kerjadekat-rabbitmq-delayed
+    newTag: "3.13"
+
+configMapGenerator:
+  - name: kerjadekat-backend-config
+    behavior: merge
+    literals:
+      - ENV=production
+      - DB_SSLMODE=require

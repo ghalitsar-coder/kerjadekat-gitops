@@ -1,0 +1,13 @@
+# gitops/overlays/aks/patches/storage-class-rmq.yaml
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  namespace: kerjadekat-infra
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: default

@@ -1,0 +1,31 @@
+# gitops/overlays/aks-lite/kustomization.yaml
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/namespaces.yaml
+  - ../../base/backend
+  - ../../base/frontend
+  - ../../base/infra/postgresql-statefulset.yaml
+  - patches/backend-loadbalancer.yaml
+  - patches/frontend-loadbalancer.yaml
+  - patches/storage-class-pg.yaml
+  - patches/hpa-backend-limit.yaml
+  - patches/hpa-frontend-limit.yaml
+
+images:
+  - name: kerjadekat/postgres-postgis
+    newName: ghalitsar/kerjadekat-postgres-postgis
+    newTag: "17-3.5"
+  # Backend & frontend tidak perlu direplace karena memang sudah dari dockerhub ghalitsar di base
+
+configMapGenerator:
+  - name: kerjadekat-backend-config
+    behavior: merge
+    literals:
+      - ENV=production
+      - DB_SSLMODE=require
+      # Fallback ke public RabbitMQ & Redis (atau ngrok tunnel lokal Anda)
+      - RABBITMQ_URL="amqp://guest:guest@localhost:5672/" 
+      - REDIS_HOST="localhost"

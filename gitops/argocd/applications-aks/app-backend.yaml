@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kerjadekat
+  source:
+    repoURL: https://github.com/ghalitsar-coder/kerjadekat-gitops
+    targetRevision: HEAD
+    path: gitops/base/backend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kerjadekat
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    # automated sync disabled for local dev (Minikube)
+    # enable for staging/prod by uncommenting:
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true

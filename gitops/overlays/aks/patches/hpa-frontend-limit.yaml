@@ -1,0 +1,10 @@
+# gitops/overlays/aks/patches/hpa-frontend-limit.yaml
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kerjadekat-frontend-hpa
+  namespace: kerjadekat
+spec:
+  minReplicas: 1
+  maxReplicas: 2

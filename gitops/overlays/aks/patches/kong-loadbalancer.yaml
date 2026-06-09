@@ -1,0 +1,12 @@
+# gitops/overlays/aks/patches/kong-loadbalancer.yaml
+# Mengubah Kong Proxy dari NodePort (Minikube) ke LoadBalancer (AKS)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-kong-proxy
+  namespace: kong
+spec:
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: kerjadekat-aks-rg
