@@ -1,0 +1,157 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: kerjadekat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ghalitsar/kerjadekat-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8085
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DB_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DB_USER
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DB_NAME
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: JWT_SECRET
+            - name: XENDIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: XENDIT_API_KEY
+            - name: XENDIT_CALLBACK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: XENDIT_CALLBACK_TOKEN
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: SERVER_PORT
+            - name: ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: ENV
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_PORT
+            - name: DB_SSLMODE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_SSLMODE
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: REDIS_PORT
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: REDIS_PASSWORD
+            - name: RABBITMQ_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: RABBITMQ_URL
+            - name: JWT_ACCESS_EXPIRY_MINUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: JWT_ACCESS_EXPIRY_MINUTES
+            - name: JWT_REFRESH_EXPIRY_DAYS
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: JWT_REFRESH_EXPIRY_DAYS
+            - name: WORKER_LOCATION_TTL_MINUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: WORKER_LOCATION_TTL_MINUTES
+            - name: MATCH_RADIUS_METERS
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MATCH_RADIUS_METERS
+            - name: MATCH_TIMER_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MATCH_TIMER_SECONDS
+            - name: MATCH_MAX_ROUNDS
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MATCH_MAX_ROUNDS
+            - name: OTP_LOG_FILE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: OTP_LOG_FILE
+            - name: STORAGE_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: STORAGE_BACKEND
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+  namespace: kerjadekat
+spec:
+  ports:
+    - port: 8085
+      targetPort: 8085
+      protocol: TCP
+  selector:
+    app: backend

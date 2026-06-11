@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: kerjadekat
+data:
+  SERVER_PORT: "8085"
+  ENV: "production"
+  DB_HOST: "postgresql-svc.kerjadekat.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_SSLMODE: "disable"
+  REDIS_HOST: "redis-svc.kerjadekat.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: ""
+  RABBITMQ_URL: "amqp://guest:guest@rabbitmq-svc.kerjadekat.svc.cluster.local:5672/"
+  WORKER_LOCATION_TTL_MINUTES: "5"
+  MATCH_RADIUS_METERS: "5000"
+  MATCH_TIMER_SECONDS: "60"
+  MATCH_MAX_ROUNDS: "5"
+  JWT_ACCESS_EXPIRY_MINUTES: "60"
+  JWT_REFRESH_EXPIRY_DAYS: "30"
+  OTP_LOG_FILE: "/tmp/otp.log"
+  STORAGE_BACKEND: "mock"

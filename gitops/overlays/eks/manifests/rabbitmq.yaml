@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  namespace: kerjadekat
+spec:
+  serviceName: rabbitmq
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.13-management-alpine
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              PLUGIN_URL="https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.13.0/rabbitmq_delayed_message_exchange-3.13.0.ez"
+              PLUGIN_DIR="$RABBITMQ_HOME/plugins"
+              if [ ! -f "$PLUGIN_DIR/rabbitmq_delayed_message_exchange-3.13.0.ez" ]; then
+                wget -q "$PLUGIN_URL" -O "$PLUGIN_DIR/rabbitmq_delayed_message_exchange-3.13.0.ez"
+              fi
+              rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange
+              exec docker-entrypoint.sh rabbitmq-server
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "guest"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "guest"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-svc
+  namespace: kerjadekat
+spec:
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: amqp
+    - port: 15672
+      targetPort: 15672
+      name: management
+  selector:
+    app: rabbitmq
+  clusterIP: None
