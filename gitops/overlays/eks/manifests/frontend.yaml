@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghalitsar/kerjadekat-frontend:102cf2d
+          image: ghalitsar/kerjadekat-frontend:b999781
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
