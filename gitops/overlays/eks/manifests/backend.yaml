@@ -140,6 +140,21 @@ spec:
                 secretKeyRef:
                   name: backend-secret
                   key: CLOUDINARY_URL
+            - name: AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: AI_API_KEY
+            - name: AI_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: AI_API_URL
+            - name: AI_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: AI_MODEL
           resources:
             requests:
               cpu: 200m
