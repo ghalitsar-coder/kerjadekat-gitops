@@ -23,6 +23,13 @@ credentials:
                 directEntry:
                   privateKey: "PLACEHOLDER_SSH_KEY_REPLACE_ME_OR_USE_JENKINS_UI"
 
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-credentials"
+              username: "ghalitsar-coder"
+              password: "${GITHUB_PAT}"
+              description: "GitHub PAT for GitOps Repo"
+
 unclassified:
   location:
     url: http://localhost:8080/
