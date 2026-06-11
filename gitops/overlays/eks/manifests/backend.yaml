@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghalitsar/kerjadekat-backend:latest
+          image: ghalitsar/kerjadekat-backend:56ba900
           imagePullPolicy: Always
           ports:
             - containerPort: 8085
