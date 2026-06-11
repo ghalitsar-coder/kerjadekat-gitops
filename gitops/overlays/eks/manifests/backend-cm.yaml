@@ -21,3 +21,5 @@ data:
   JWT_REFRESH_EXPIRY_DAYS: "30"
   OTP_LOG_FILE: "/tmp/otp.log"
   STORAGE_BACKEND: "cloudinary"
+  AI_API_URL: "https://openrouter.ai/api/v1/chat/completions"
+  AI_MODEL: "opencode/deepseek-v4-flash-free"
